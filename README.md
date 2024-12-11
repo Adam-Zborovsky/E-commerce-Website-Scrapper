@@ -16,10 +16,14 @@ The E-commerce Product Information Scraper is a Python program designed to extra
 
 1. Clone this repository to your local machine using `git clone`.
 2. Navigate to the project directory.
-3. Review the `main.py` file and customize the scraping logic as needed for your chosen website.
-4. Run the program using a Python interpreter: `main.py`.
-5. The program will scrape product information and store it in a structured format like a CSV file.
-6. And install images if needed
+3. Install the dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. Review the `main.py` file and customize the scraping logic as needed for your chosen website.
+5. Run the program using a Python interpreter: `main.py`.
+6. The program will scrape product information and store it in a structured format like a CSV file.
+7. And install images if needed
 
 ## Example
 
