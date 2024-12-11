@@ -23,7 +23,7 @@ The E-commerce Product Information Scraper is a Python program designed to extra
 4. Install the dependencies:
    With venv:
     ```bash
-    code/Scripts/python.exe -m pip install -r code/Scripts/requirements.txt
+    code/Scripts/python.exe -m pip install -r code/requirements.txt
     ```
     Without venv:
     ```bash
