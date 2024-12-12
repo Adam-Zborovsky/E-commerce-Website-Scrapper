@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import re
+import shutil
 
 
 print("Hello Mr.Weiss")
@@ -16,9 +17,10 @@ while confirm != "y":
         num_of_pages = int(input("How Many Pages Dose Your Url Have? And Press Enter:  "))
 
 
+shutil.rmtree("Result", ignore_errors=True)
+os.makedirs("Result")
 urls =[]
 
-# Scrape all pages
 for i in range(1, num_of_pages + 1):
     url = f"{base_url}page/{i}/"
     r = requests.get(url)
@@ -28,15 +30,13 @@ for i in range(1, num_of_pages + 1):
     for thumbnail_div in thumbnail_divs:
             a_tag = thumbnail_div.find("a")
             url = a_tag.get("href")
-            # Append data if name and image exist
             if a_tag and url:
                 urls.append(url)
 
 
 
+product_data = []
 for url in urls:
-    
-    product_data = []
     name = ""
     price = ""
     content = []
@@ -58,7 +58,16 @@ for url in urls:
                 if text:
                     text = text.replace(",",".")
                     content.append(text)
-    
+    else:
+        content_div_tags = soup.find_all("div", class_="tab-content")
+        for content_div_tag in content_div_tags:
+            for child in content_div_tag.find_all("p"):
+                text = child.text.strip() 
+                if text:
+                    text = text.replace(",",".")
+                    content.append(text)
+                    
+                    
     description_div_tags = soup.find_all("div", class_="row description")
     
     for description_div_tag in description_div_tags:
@@ -76,23 +85,10 @@ for url in urls:
             price = span_tag.text.strip() 
 
     
-    product_data = [[name,price,' '.join(description),' '.join(content)]]
-
-    base_path =f"Result/{name}"
-    if os.path.exists(base_path):
-        pass
-    else:
-        os.makedirs(base_path)
-            
-    csv_filename = base_path + "/product_data.csv"
-    with open(csv_filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["Product Name", "Product Price", "Quick View", "Big Description"])
-        for data in product_data:
-            csv_writer.writerow(data)
+    product_data.append([name,price,' '.join(description),' '.join(content)])
 
     
-    
+
     
     product_images = []
     img_tags = soup.find_all("img", class_="wp-post-image")
@@ -101,19 +97,16 @@ for url in urls:
         if src:
             product_images.append(src)
     
-    
 
-    if os.path.exists(base_path+"/images"):
-        for filename in os.listdir(base_path+"/images"):
-            file_path = os.path.join(base_path+"/images", filename)
-            os.remove(file_path)
-    else:
-        os.makedirs(base_path+"/images")
+    name = re.sub(r'[<>:"/\\|?*]', '_', name)
+    
+    base_path =f"Result/{name}"
+    os.mkdir(base_path)
     
     for i, img_url in enumerate(product_images):
         # Sanitize product name for use as a file name
-        sanitized_name = re.sub(r'[\/:*?"<>|]', '_', name)
-        img_filename = f"{base_path}/images/{i+1}.jpg"
+        
+        img_filename = f"{base_path}/{i+1}.jpg"
         try:
             img_data = requests.get(img_url).content
             with open(img_filename, 'wb') as img_file:
@@ -124,16 +117,13 @@ for url in urls:
             print(f"Failed to download image {img_url}: {e}")
 
 
-# # Create 'images' directory, overwriting if exists
-# if os.path.exists("Result/images"):
-#     for filename in os.listdir("Result/images"):
-#         file_path = os.path.join("Result/images", filename)
-#         os.remove(file_path)
-# else:
-#     os.makedirs("Result/images")
 
 
 
-
-
+csv_filename = "Result/product_data.csv"
+with open(csv_filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
+    csv_writer = csv.writer(csvfile)
+    csv_writer.writerow(["Product Name", "Product Price", "Quick View", "Big Description"])
+    for data in product_data:
+        csv_writer.writerow(data)
 print(f"Data successfully scraped and saved to {csv_filename}")
