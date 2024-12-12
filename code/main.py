@@ -115,6 +115,7 @@ for url in urls:
             print()
         except Exception as e:
             print(f"Failed to download image {img_url}: {e}")
+            input()
 
 
 
@@ -127,3 +128,4 @@ with open(csv_filename, 'w', newline='', encoding='utf-8-sig') as csvfile:
     for data in product_data:
         csv_writer.writerow(data)
 print(f"Data successfully scraped and saved to {csv_filename}")
+input()
