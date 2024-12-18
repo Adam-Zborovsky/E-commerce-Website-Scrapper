@@ -37,6 +37,7 @@ for i in range(1, num_of_pages + 1):
 
 product_data = []
 for url in urls:
+    dupes = 1
     name = ""
     price = ""
     content = []
@@ -101,8 +102,14 @@ for url in urls:
     name = re.sub(r'[<>:"/\\|?*]', '_', name)
     
     base_path =f"Result/{name}"
-    os.mkdir(base_path)
+    if os.path.exists(base_path):
+        os.mkdir(base_path + str(dupes))
+        dupes =+ 1
+    else:
+        os.mkdir(base_path)
     
+    
+    print(f"Downloading {name}")
     for i, img_url in enumerate(product_images):
         # Sanitize product name for use as a file name
         
@@ -111,8 +118,6 @@ for url in urls:
             img_data = requests.get(img_url).content
             with open(img_filename, 'wb') as img_file:
                 img_file.write(img_data)
-            print(f"{i+1}.download image {img_url}")
-            print()
         except Exception as e:
             print(f"Failed to download image {img_url}: {e}")
             input()
