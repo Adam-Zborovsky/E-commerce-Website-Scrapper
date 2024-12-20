@@ -39,8 +39,8 @@ for i in range(1, num_of_pages + 1):
 
 
 product_data = []
+dupes = 1
 for i, url in enumerate(urls):
-    dupes = 1
     name = ""
     price = ""
     content = []
